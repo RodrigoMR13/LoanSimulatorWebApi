@@ -8,6 +8,6 @@ namespace Application.Dtos
         [JsonPropertyName("tipo")]
         public AmortizationMethodsEnum SimulationType { get; set; }
         [JsonPropertyName("parcelas")]
-        public List<InstallmentsDto> Installments { get; set; }
+        public List<InstallmentsDto>? Installments { get; set; }
     }
 }

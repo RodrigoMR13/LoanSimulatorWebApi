@@ -6,16 +6,16 @@ namespace LoanSimulatorWebAPI.Controllers
 {
     [ApiController]
     [Route("api/v1/emprestimos")]
-    public class SimulatorController : ControllerBase
+    public class LoanSimulatorController : ControllerBase
     {
         private readonly IMediator _mediator;
         
-        public SimulatorController(IMediator mediator)
+        public LoanSimulatorController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [HttpPost("/simular")]
+        [HttpPost("simular")]
         public async Task<IActionResult> Post([FromBody] SimulateLoanRequest request)
         {
             var result = await _mediator.Send(request);

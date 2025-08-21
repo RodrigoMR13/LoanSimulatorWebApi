@@ -1,7 +1,7 @@
 ﻿using Application.Dtos.Requests;
 using Application.Dtos;
 using Application.UseCases;
-using Application.Enums;
+using Domain.Enums;
 
 namespace Application.Services
 {
