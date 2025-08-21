@@ -1,6 +1,5 @@
 ﻿using Application.Dtos.Requests;
 using Application.Dtos.Responses;
-using Application.Exceptions;
 using Application.Services;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -8,7 +7,7 @@ using MediatR;
 
 namespace Application.Handlers
 {
-    public class SimulateLoanHandler(IProductRepository productRepository, ILoanSimulatorService loanSimulatorService) : IRequestHandler<SimulateLoanRequest, LoanSimulationResponse>
+    public class LoanSimulationHandler(IProductRepository productRepository, ILoanSimulatorService loanSimulatorService) : IRequestHandler<SimulateLoanRequest, LoanSimulationResponse>
     {
         private readonly IProductRepository _productRepository = productRepository;
         private readonly ILoanSimulatorService _loanSimulatorService = loanSimulatorService;

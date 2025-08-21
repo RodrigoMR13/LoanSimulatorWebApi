@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LoanSimulatorWebAPI.Controllers
 {
     [ApiController]
-    [Route("api/v1/emprestimos/produtos")]
+    [Route("emprestimos/v1/produtos")]
     public class ProductsController(IMediator mediator) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
