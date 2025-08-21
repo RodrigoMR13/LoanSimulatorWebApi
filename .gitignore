@@ -1,0 +1,18 @@
+cat > .gitignore << 'EOF'
+# Build e IDE
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# Publicação
+publish/
+
+# Logs
+*.log
+
+# Segredos (ajuste conforme seu projeto)
+appsettings.Development.json
+appsettings.Local.json
+EOF
