@@ -10,8 +10,7 @@ obj/
 publish/
 
 # Logs
-*.log
-
+LoanSimulatorWebApi/Logs/log-*
 # Segredos (ajuste conforme seu projeto)
 appsettings.Development.json
 appsettings.Local.json
