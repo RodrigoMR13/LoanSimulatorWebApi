@@ -1,6 +1,6 @@
-﻿using Application.Dtos;
-using Application.Dtos.Requests;
+﻿using Application.Dtos.Requests;
 using Application.Dtos.Responses;
+using Application.Exceptions;
 using Application.Services;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -8,16 +8,10 @@ using MediatR;
 
 namespace Application.Handlers
 {
-    public class SimulateLoanHandler : IRequestHandler<SimulateLoanRequest, LoanSimulationResponse>
+    public class SimulateLoanHandler(IProductRepository productRepository, ILoanSimulatorService loanSimulatorService) : IRequestHandler<SimulateLoanRequest, LoanSimulationResponse>
     {
-        private readonly IProductRepository _productRepository;
-        private readonly ILoanSimulatorService _loanSimulatorService;
-
-        public SimulateLoanHandler(IProductRepository productRepository, ILoanSimulatorService loanSimulatorService)
-        {
-            _productRepository = productRepository;
-            _loanSimulatorService = loanSimulatorService;
-        }
+        private readonly IProductRepository _productRepository = productRepository;
+        private readonly ILoanSimulatorService _loanSimulatorService = loanSimulatorService;
 
         public async Task<LoanSimulationResponse> Handle(SimulateLoanRequest request, CancellationToken cancellationToken)
         {
@@ -38,8 +32,8 @@ namespace Application.Handlers
             var products = await _productRepository.GetAllAsync();
 
             var appropriateProduct = products.FirstOrDefault(p =>
-                (p.MinMonth <= request.Period && p.MaxMonth >= request.Period) &&
-                (p.MinValue <= request.Value && p.MaxValue >= request.Value));
+                p.MinMonth <= request.Period && p.MaxMonth >= request.Period &&
+                p.MinValue <= request.Value && p.MaxValue >= request.Value);
 
             return appropriateProduct;
         }

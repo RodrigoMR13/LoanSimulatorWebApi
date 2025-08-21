@@ -5,16 +5,10 @@ using Domain.Enums;
 
 namespace Application.Services
 {
-    public class LoanSimulatorService : ILoanSimulatorService
+    public class LoanSimulatorService(ISacCalculatorUseCase sacCalculator, IPriceCalculatorUseCase priceCalculator) : ILoanSimulatorService
     {
-        private readonly ISacCalculatorUseCase _sacCalculator;
-        private readonly IPriceCalculatorUseCase _priceCalculator;
-
-        public LoanSimulatorService(ISacCalculatorUseCase sacCalculator, IPriceCalculatorUseCase priceCalculator)
-        {
-            _sacCalculator = sacCalculator;
-            _priceCalculator = priceCalculator;
-        }
+        private readonly ISacCalculatorUseCase _sacCalculator = sacCalculator;
+        private readonly IPriceCalculatorUseCase _priceCalculator = priceCalculator;
 
         public SimulationDto SimulateSac(SimulateLoanRequest request, decimal interestRate)
         {

@@ -4,8 +4,8 @@ using MediatR;
 
 namespace Application.Dtos.Requests
 {
-    public class GetProductByIdRequest : IRequest<ApiResponse<Product>> 
+    public class GetProductByIdRequest(int id) : IRequest<ApiResponse<Product>>
     {
-        public int Id { get; set; }
+        public int Id { get; set; } = id;
     }
 }

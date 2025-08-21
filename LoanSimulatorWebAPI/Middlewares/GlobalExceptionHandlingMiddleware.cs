@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Application.Exceptions;
+using FluentValidation;
 using LoanSimulatorWebAPI.Dtos;
 using System.Net;
 using System.Text.Json;
@@ -18,6 +19,10 @@ namespace LoanSimulatorWebAPI.Middlewares
             catch (ValidationException ex)
             {
                 await HandleValidationExceptionAsync(context, ex);
+            }
+            catch (ProductNotFoundException ex)
+            {
+                await HandleProductNotFoundExceptionAsync(context, ex);
             }
             catch (Exception ex)
             {
@@ -40,6 +45,26 @@ namespace LoanSimulatorWebAPI.Middlewares
                     Field = e.PropertyName,
                     Message = e.ErrorMessage
                 }).ToList()
+            };
+
+            var result = JsonSerializer.Serialize(response);
+            return context.Response.WriteAsync(result);
+        }
+
+        private static Task HandleProductNotFoundExceptionAsync(HttpContext context, ProductNotFoundException ex)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+
+            var response = new ErrorResponse
+            {
+                RequestId = context.TraceIdentifier,
+                StatusCode = context.Response.StatusCode,
+                Message = "Not Found",
+                Errors =
+                [
+                    new() { Field = "", Message = ex.Message }
+                ]
             };
 
             var result = JsonSerializer.Serialize(response);
