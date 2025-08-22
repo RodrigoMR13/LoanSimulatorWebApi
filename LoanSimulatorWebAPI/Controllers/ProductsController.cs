@@ -1,11 +1,13 @@
 ﻿using Application.Dtos.Requests;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LoanSimulatorWebAPI.Controllers
 {
     [ApiController]
     [Route("emprestimos/v1/produtos")]
+    [Authorize]
     public class ProductsController(IMediator mediator) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;

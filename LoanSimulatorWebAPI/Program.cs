@@ -1,3 +1,6 @@
+using Infrastructure.Middlewares;
+using Infrastructure.Serialization;
+using LoanSimulatorWebAPI;
 using LoanSimulatorWebAPI.Configuration;
 using LoanSimulatorWebAPI.Middlewares;
 using Serilog;
@@ -21,6 +24,7 @@ try
         .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.JsonSerializerOptions.Converters.Add(new DecimalTwoPlacesConverter());
         });
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddCustomSwagger();
@@ -28,6 +32,10 @@ try
     builder.Services.AddRepositories();
     builder.Services.AddApplication();
     builder.Services.AddValidators();
+    builder.Services.AddEventHubProducer(configuration);
+    builder.Services.AddOpenTelemetryProvider();
+    builder.Services.AddOpenTelemetryExtensions();
+    builder.Services.AddAuthConfig(configuration);
     if (!builder.Environment.IsDevelopment())
     {
         builder.WebHost.UseUrls("http://+:80");
@@ -44,8 +52,10 @@ try
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "LoanSimulatorWebAPI v1");
     });
+    app.UseAuthentication();
     app.UseAuthorization();
     app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+    app.UseMiddleware<TelemetryMiddleware>();
     app.MapControllers();
     app.Run();
 }

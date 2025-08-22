@@ -1,18 +1,25 @@
 ﻿using Application.Dtos;
 using Application.Dtos.Requests;
 using Application.Dtos.Responses;
+using Application.Interfaces;
 using Application.Services;
 using Domain.Entities;
 using Domain.Interfaces;
 using MediatR;
+using System.Text.Json;
 
 namespace Application.Handlers
 {
-    public class LoanSimulationHandler(IProductRepository productRepository, ILoanSimulationRepository loanSimulationRepository, ILoanSimulatorService loanSimulatorService) : IRequestHandler<SimulateLoanRequest, LoanSimulationResponse>
+    public class LoanSimulationHandler(IProductRepository productRepository,
+        ILoanSimulationRepository loanSimulationRepository,
+        ILoanSimulatorService loanSimulatorService,
+        IEventHubProducer eventHubProducer) 
+        : IRequestHandler<SimulateLoanRequest, LoanSimulationResponse>
     {
         private readonly IProductRepository _productRepository = productRepository;
         private readonly ILoanSimulationRepository _loanSimulationRepository = loanSimulationRepository;
         private readonly ILoanSimulatorService _loanSimulatorService = loanSimulatorService;
+        private readonly IEventHubProducer _eventHubProducer = eventHubProducer;
 
         public async Task<LoanSimulationResponse> Handle(SimulateLoanRequest request,
             CancellationToken cancellationToken)
@@ -24,10 +31,12 @@ namespace Application.Handlers
 
             var loanSimulation = GetLoanSimulationEntity(sacSimulationResult, priceSimulationResult, appropriateProduct);
 
-            loanSimulation = await _loanSimulationRepository.AddAsync(loanSimulation);
+            _ = await _loanSimulationRepository.AddAsync(loanSimulation);
 
             var response = new LoanSimulationResponse(1, appropriateProduct.Id, appropriateProduct.Name,
                 appropriateProduct.InterestRate, [sacSimulationResult, priceSimulationResult]);
+
+            await _eventHubProducer.SendMessageAsync(JsonSerializer.Serialize(response));
 
             return response;
         }
@@ -43,7 +52,7 @@ namespace Application.Handlers
             return appropriateProduct;
         }
 
-        private LoanSimulation GetLoanSimulationEntity(SimulationDto sacSimulationResult,
+        private static LoanSimulation GetLoanSimulationEntity(SimulationDto sacSimulationResult,
             SimulationDto priceSimulationResult, Product appropriateProduct)
         {
             var sacSimulationEntity = new Simulation
