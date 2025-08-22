@@ -11,6 +11,10 @@ namespace Domain.Entities
         [Column("ID")]
         public long Id { get; set; }
         [Required]
+        [Column("CREATED_AT")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreatedDateTime { get; set; }
+        [Required]
         [Column("TIPO_AMORTIZACAO", TypeName = "varchar(80)")]
         public AmortizationMethodsEnum SimulationType { get; set; }
         [Required]

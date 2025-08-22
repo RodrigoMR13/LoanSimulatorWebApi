@@ -2,6 +2,7 @@
 using Application.Dtos;
 using Application.UseCases;
 using Domain.Enums;
+using Domain.Interfaces;
 
 namespace Application.Services
 {

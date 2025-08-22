@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,6 +21,7 @@ namespace Infrastructure.Migrations
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "DATEADD(HOUR, -3, GETUTCDATE())"),
                     ID_PRODUTO = table.Column<int>(type: "int", nullable: false),
                     NO_PRODUTO = table.Column<string>(type: "varchar(200)", nullable: false),
                     TAXA_JUROS = table.Column<decimal>(type: "numeric(10,9)", nullable: false)
@@ -36,6 +38,7 @@ namespace Infrastructure.Migrations
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "DATEADD(HOUR, -3, GETUTCDATE())"),
                     TIPO_AMORTIZACAO = table.Column<string>(type: "varchar(80)", nullable: false),
                     ID_SIMULACAO_EMPRESTIMO = table.Column<long>(type: "bigint", nullable: false)
                 },
@@ -58,6 +61,7 @@ namespace Infrastructure.Migrations
                 {
                     ID = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CREATED_AT = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "DATEADD(HOUR, -3, GETUTCDATE())"),
                     NUM_PARCELA = table.Column<short>(type: "smallint", nullable: false),
                     VR_AMORTIZACAO = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     VR_JUROS = table.Column<decimal>(type: "numeric(18,2)", nullable: false),

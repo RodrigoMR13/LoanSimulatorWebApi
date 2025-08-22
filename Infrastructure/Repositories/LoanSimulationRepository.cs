@@ -47,13 +47,21 @@ namespace Infrastructure.Repositories
             var query = _dbContext.LoanSimulations
                 .Include(ls => ls.Simulations)
                 .ThenInclude(s => s.Installments)
-                .Where(ls => DateOnly.FromDateTime(ls.CreatedDate) == date)
+                .Where(ls => DateOnly.FromDateTime(ls.CreatedDateTime) == date)
                 .AsQueryable();
 
             var records = await query.ToListAsync();
             
             _logger.LogInformation($"Simulações obtidas. Quantidade: {records.Count}");
             return records;
+        }
+
+        public async Task<LoanSimulation> AddAsync(LoanSimulation loanSimulation)
+        {
+            await _dbContext.LoanSimulations.AddAsync(loanSimulation);
+            await _dbContext.SaveChangesAsync();
+            _logger.LogInformation($"Simulação de empréstimo adicionada com ID: {loanSimulation.Id}");
+            return loanSimulation;
         }
     }
 }

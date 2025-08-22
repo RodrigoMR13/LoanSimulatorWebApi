@@ -1,5 +1,6 @@
 using Application.Dtos.Requests;
 using Application.Dtos.Responses;
+using Domain.Enums;
 using Domain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -22,9 +23,9 @@ namespace Application.Handlers
             var responseRecords = simulations.Select(simulation => new GetSimulationByIdResponse
             {
                 Id = simulation.Id,
-                Value = simulation.Simulations.First().Installments.Sum(i => i.AmortizationValue + i.InterestValue),
+                Value = simulation.Simulations.First().Installments.Sum(i => i.AmortizationValue),
                 Installments = simulation.Simulations.First().Installments.Count,
-                TotalValueInstallments = simulation.Simulations.SelectMany(s => s.Installments).Sum(i => i.InstallmentValue)
+                TotalValueInstallments = simulation.Simulations.First().Installments.Sum(i => i.InstallmentValue)
             }).ToList();
 
             var response = new GetAllSimulationsResponse

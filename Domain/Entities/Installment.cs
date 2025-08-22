@@ -10,6 +10,10 @@ namespace Domain.Entities
         [Column("ID")]
         public long Id { get; set; }
         [Required]
+        [Column("CREATED_AT")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreatedDateTime { get; set; }
+        [Required]
         [Column("NUM_PARCELA")]
         public short InstallmentNumber { get; set; }
         [Required]

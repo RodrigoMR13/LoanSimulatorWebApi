@@ -27,15 +27,38 @@ namespace Infrastructure.SqlServer.Context
 
             modelBuilder.Entity<Installment>(entity =>
             {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
                 entity.Property(e => e.AmortizationValue).HasColumnType("numeric(18,2)");
                 entity.Property(e => e.InterestValue).HasColumnType("numeric(18,2)");
                 entity.Property(e => e.InstallmentValue).HasColumnType("numeric(18,2)");
+                entity.Property(e => e.CreatedDateTime)
+                    .HasDefaultValueSql("DATEADD(HOUR, -3, GETUTCDATE())")
+                    .ValueGeneratedOnAdd();
             });
 
             modelBuilder.Entity<LoanSimulation>(entity =>
             {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
                 entity.Property(e => e.InterestRate).HasColumnType("numeric(10,9)");
+                entity.Property(e => e.CreatedDateTime)
+                    .HasDefaultValueSql("DATEADD(HOUR, -3, GETUTCDATE())")
+                    .ValueGeneratedOnAdd();
             });
+
+            modelBuilder.Entity<Simulation>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id)
+                    .ValueGeneratedOnAdd();
+                entity.Property(e => e.CreatedDateTime)
+                    .HasDefaultValueSql("DATEADD(HOUR, -3, GETUTCDATE())")
+                    .ValueGeneratedOnAdd();
+            });
+
         }
     }
 }

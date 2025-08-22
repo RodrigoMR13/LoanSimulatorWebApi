@@ -9,5 +9,6 @@ namespace Domain.Interfaces
         Task<IEnumerable<LoanSimulation>> GetAllAsync(PaginationRequest paginationRequest);
         Task<LoanSimulation?> GetByIdAsync(int id);
         Task<IEnumerable<LoanSimulation>> GetByDateAsync(DateOnly date);
+        Task<LoanSimulation> AddAsync(LoanSimulation loanSimulation);
     }
 }

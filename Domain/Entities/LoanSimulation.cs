@@ -10,8 +10,9 @@ namespace Domain.Entities
         [Column("ID")]
         public long Id { get; set; }
         [Required]
-        [Column("CREATE_DATETIME")]
-        public DateTime CreatedDate { get; set; }
+        [Column("CREATED_AT")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime CreatedDateTime { get; set; }
         [Required]
         [Column("ID_PRODUTO")]
         public int ProductId { get; set; }

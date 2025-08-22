@@ -2,6 +2,7 @@
 using Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace LoanSimulatorWebAPI.Controllers
 {
@@ -12,7 +13,7 @@ namespace LoanSimulatorWebAPI.Controllers
         private readonly IMediator _mediator = mediator;
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromBody] PaginationRequest paginationRequest)
+        public async Task<IActionResult> Get([FromQuery] PaginationRequest paginationRequest)
         {
             var request = new GetAllSimulationsRequest(paginationRequest);   
 
@@ -22,7 +23,7 @@ namespace LoanSimulatorWebAPI.Controllers
         }
 
         [HttpGet("volume")]
-        public async Task<IActionResult> GetVolume([FromQuery] DateOnly referenceDate)
+        public async Task<IActionResult> GetVolume([FromQuery(Name = "dataReferencia")] DateOnly referenceDate)
         {
             var request = new GetSimulationsVolumeRequest { ReferenceDate = referenceDate };
 

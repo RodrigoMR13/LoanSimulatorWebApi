@@ -13,5 +13,6 @@ publish/
 LoanSimulatorWebApi/Logs/log-*
 # Segredos (ajuste conforme seu projeto)
 appsettings.Development.json
+appsettings.Production.json
 appsettings.Local.json
 EOF
