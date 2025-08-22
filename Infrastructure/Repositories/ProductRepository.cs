@@ -13,14 +13,17 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
+            _logger.LogInformation("Obtendo todos os produtos no Banco de Dados...");
             var dbResponse = await _dbContext.Produtos.AsNoTracking().ToListAsync();
-            _logger.LogInformation($"Produtos obtidos. Quantidade: {dbResponse.Count()}");
+            _logger.LogInformation($"Produtos obtidos com sucesso! Quantidade: {dbResponse.Count()}");
             return dbResponse;
         }
 
         public async Task<Product?> GetByIdAsync(int id)
         {
-            var dbResponse = await _dbContext.Produtos.AsNoTracking().SingleOrDefaultAsync(p => p.Id == id);   
+            _logger.LogInformation($"Buscando produto de ID {id} no Banco de Dados...");
+            var dbResponse = await _dbContext.Produtos.AsNoTracking().SingleOrDefaultAsync(p => p.Id == id);
+            _logger.LogInformation($"produto de ID {id} obtido com sucesso!");
             return dbResponse;
         }
     }

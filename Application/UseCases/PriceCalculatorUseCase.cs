@@ -1,13 +1,15 @@
 ﻿using Application.Dtos;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases
 {
-    public class PriceCalculatorUseCase : IPriceCalculatorUseCase
+    public class PriceCalculatorUseCase(ILogger<PriceCalculatorUseCase> logger) : IPriceCalculatorUseCase
     {
-        public PriceCalculatorUseCase() { }
+        private readonly ILogger<PriceCalculatorUseCase> _logger = logger;
 
         public List<InstallmentsDto> Calculate(decimal value, int period, decimal interestRate)
         {
+            _logger.LogInformation("Calculando parcelas do Sistema PRICE...");
             var installments = new List<InstallmentsDto>();
 
             if (interestRate == 0)

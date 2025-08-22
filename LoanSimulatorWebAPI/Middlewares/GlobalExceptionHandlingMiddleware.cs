@@ -6,9 +6,10 @@ using System.Text.Json;
 
 namespace LoanSimulatorWebAPI.Middlewares
 {
-    public class GlobalExceptionHandlingMiddleware(RequestDelegate next)
+    public class GlobalExceptionHandlingMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlingMiddleware> logger)
     {
         private readonly RequestDelegate _next = next;
+        private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger = logger;
 
         public async Task InvokeAsync(HttpContext context)
         {
@@ -18,14 +19,22 @@ namespace LoanSimulatorWebAPI.Middlewares
             }
             catch (ValidationException ex)
             {
+                _logger.LogError(ex, "Validation error occurred.");
                 await HandleValidationExceptionAsync(context, ex);
             }
             catch (ProductNotFoundException ex)
             {
+                _logger.LogError(ex, "Product not found.");
                 await HandleProductNotFoundExceptionAsync(context, ex);
+            }
+            catch (NoSuitableProductFoundException ex)
+            {
+                _logger.LogError(ex, "No Suitable Product Found.");
+                await HandleNoSuitableProductFoundExceptionAsync(context, ex);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Unhandled exception occurred.");
                 await HandleGenericExceptionAsync(context, ex);
             }
         }
@@ -71,6 +80,26 @@ namespace LoanSimulatorWebAPI.Middlewares
             return context.Response.WriteAsync(result);
         }
 
+        private static Task HandleNoSuitableProductFoundExceptionAsync(HttpContext context, Exception ex)
+        {
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
+
+            var response = new ErrorResponse
+            {
+                RequestId = context.TraceIdentifier,
+                StatusCode = context.Response.StatusCode,
+                Message = "No Suitable Product Found",
+                Errors =
+                [
+                    new() { Field = "", Message = ex.Message }
+                ]
+            };
+
+            var result = JsonSerializer.Serialize(response);
+            return context.Response.WriteAsync(result);
+        }
+
         private static Task HandleGenericExceptionAsync(HttpContext context, Exception ex)
         {
             context.Response.ContentType = "application/json";
@@ -82,9 +111,9 @@ namespace LoanSimulatorWebAPI.Middlewares
                 StatusCode = context.Response.StatusCode,
                 Message = "An unexpected error occurred",
                 Errors =
-            [
-                new() { Field = "", Message = ex.Message }
-            ]
+                [
+                    new() { Field = "", Message = ex.Message }
+                ]
             };
 
             var result = JsonSerializer.Serialize(response);

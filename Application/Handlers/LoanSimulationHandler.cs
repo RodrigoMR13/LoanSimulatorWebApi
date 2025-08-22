@@ -1,6 +1,7 @@
 ﻿using Application.Dtos;
 using Application.Dtos.Requests;
 using Application.Dtos.Responses;
+using Application.Exceptions;
 using Application.Interfaces;
 using Application.Services;
 using Domain.Entities;
@@ -24,14 +25,14 @@ namespace Application.Handlers
         public async Task<LoanSimulationResponse> Handle(SimulateLoanRequest request,
             CancellationToken cancellationToken)
         {
-            var appropriateProduct = await SearchAppropriateProduct(request) ?? throw new Exception("Não há produto que atenda essas condições");
+            var appropriateProduct = await SearchAppropriateProduct(request) ?? throw new NoSuitableProductFoundException("Não há produto que atenda essas condições");
 
             var sacSimulationResult = _loanSimulatorService.SimulateSac(request, appropriateProduct.InterestRate);
             var priceSimulationResult = _loanSimulatorService.SimulatePrice(request, appropriateProduct.InterestRate);
 
             var loanSimulation = GetLoanSimulationEntity(sacSimulationResult, priceSimulationResult, appropriateProduct);
 
-            _ = await _loanSimulationRepository.AddAsync(loanSimulation);
+            await _loanSimulationRepository.AddAsync(loanSimulation);
 
             var response = new LoanSimulationResponse(1, appropriateProduct.Id, appropriateProduct.Name,
                 appropriateProduct.InterestRate, [sacSimulationResult, priceSimulationResult]);

@@ -16,6 +16,22 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "Password123!"
+
+  
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver_init_runner
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./init.sh:/init.sh
+    entrypoint: >
+      bash -c "
+        echo 'Aguardando SQL Server iniciar...';
+        sleep 30;
+        ./init.sh;
+        echo 'Script init.sh executado com sucesso.'
+      "
   keycloak:
     image: quay.io/keycloak/keycloak:26.3.3
     container_name: keycloak

@@ -1,13 +1,15 @@
 ﻿using Application.Dtos;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases
 {
-    public class SacCalculatorUseCase : ISacCalculatorUseCase
+    public class SacCalculatorUseCase(ILogger<SacCalculatorUseCase> logger) : ISacCalculatorUseCase
     {
-        public SacCalculatorUseCase() { }
+        private readonly ILogger<SacCalculatorUseCase> _logger = logger;
 
         public List<InstallmentsDto> Calculate(decimal value, int period, decimal interestRate)
         {
+            _logger.LogInformation("Calculando parcelas do Sistema SAC...");
             var installments = new List<InstallmentsDto>();
             var amortization = value / period;
             var remainingBalance = value;

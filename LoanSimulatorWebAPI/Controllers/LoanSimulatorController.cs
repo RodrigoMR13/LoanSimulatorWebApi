@@ -8,15 +8,16 @@ namespace LoanSimulatorWebAPI.Controllers
 {
     [ApiController]
     [Route("emprestimos/v1/simulacoes")]
-    [Authorize]
-    public class LoanSimulatorController(IMediator mediator) : ControllerBase
+    // [Authorize]
+    public class LoanSimulatorController(IMediator mediator, ILogger<LoanSimulatorController> logger) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
+        private readonly ILogger<LoanSimulatorController> _logger = logger;
 
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PaginationRequest paginationRequest)
         {
-            var request = new GetAllSimulationsRequest(paginationRequest);   
+            var request = new GetAllSimulationsRequest(paginationRequest);
 
             var result = await _mediator.Send(request);
 

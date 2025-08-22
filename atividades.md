@@ -14,9 +14,11 @@ Obrigatório:
 
 Opcional:
 
+- [x] Logs na aplicação
+- [ ] HealthChecks
 - [x] Pattern de tratamento de exceção
 - [ ] Rest nivel III
-- [x] README bem escrito
+- [ ] README.md
 - [ ] Cache
 - [ ] Testes unitários
 - [ ] Subir um SSO no docker

@@ -1,19 +1,19 @@
-﻿using Application.Dtos.Responses;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Text;
-using System.Text.Json;
 
 namespace Infrastructure.Services
 {
-    public class EventHubProducerService(EventHubProducerClient producerClient) : IEventHubProducer
+    public class EventHubProducerService(EventHubProducerClient producerClient, ILogger<EventHubProducerService> logger) : IEventHubProducer
     {
         private readonly EventHubProducerClient _producerClient = producerClient;
+        private readonly ILogger<EventHubProducerService> _logger = logger;
 
         public async Task SendMessageAsync(string message)
         {
+            _logger.LogInformation("Enviando mensagem da simulação para o EventHub...");
             byte[] bytes = Encoding.UTF8.GetBytes(message);
 
             using var eventBatch = await _producerClient.CreateBatchAsync();

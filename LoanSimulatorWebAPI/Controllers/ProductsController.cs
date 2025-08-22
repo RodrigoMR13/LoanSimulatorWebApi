@@ -7,10 +7,11 @@ namespace LoanSimulatorWebAPI.Controllers
 {
     [ApiController]
     [Route("emprestimos/v1/produtos")]
-    [Authorize]
-    public class ProductsController(IMediator mediator) : ControllerBase
+    // [Authorize]
+    public class ProductsController(IMediator mediator, ILogger<ProductsController> logger) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;
+        private readonly ILogger<ProductsController> _logger = logger;
 
         [HttpGet]
         public async Task<IActionResult> Get()
