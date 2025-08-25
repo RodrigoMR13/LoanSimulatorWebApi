@@ -8,7 +8,7 @@ namespace LoanSimulatorWebAPI.Controllers
 {
     [ApiController]
     [Route("emprestimos/v1/simulacoes")]
-    // [Authorize]
+    [Authorize]
     public class LoanSimulatorController(IMediator mediator, ILogger<LoanSimulatorController> logger) : ControllerBase
     {
         private readonly IMediator _mediator = mediator;

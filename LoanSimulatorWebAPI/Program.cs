@@ -96,7 +96,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "Erro fatal na inicializa��o da aplica��o");
+    Log.Fatal(ex, "Erro fatal na inicializacao da aplicacao");
 }
 finally
 {
