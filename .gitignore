@@ -17,5 +17,5 @@ appsettings.Production.json
 appsettings.Local.json
 EOF
 
-.data/*
-!.data/initial.sql
+data/*
+!data/initial.sql
