@@ -3,7 +3,6 @@ using Infrastructure.Mapping;
 using Infrastructure.Middlewares;
 using Infrastructure.Serialization;
 using LoanSimulatorWebAPI.Configuration;
-using LoanSimulatorWebAPI.HealthChecks;
 using LoanSimulatorWebAPI.Middlewares;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
