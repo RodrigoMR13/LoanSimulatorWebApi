@@ -2,19 +2,23 @@ services:
   api:
     container_name: loan_simulator_api
     build: ./
+    volumes:
+      - ./src/LoanSimulatorWebAPI/certs:/app/certs:ro
     ports:
-      - 8080:80
+      - 8080:8080
+      - 8443:8443
     depends_on:
       - sqlserver
+      - keycloak
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT="http://jaeger:4317"
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver_hackathon
+    container_name: sqlserver
     volumes:
-      # Persistência dos dados
       - sql_data:/var/opt/mssql
-      # Inicialização (para execução manual)
-      - ./data:/initdb
+      - ./src/data:/initdb
     ports:
       - "1433:1433"
     environment:
@@ -23,15 +27,25 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.3.3
-    container_name: keycloak_hackathon
+    container_name: keycloak
     environment:
+      KC_HEALTH_ENABLED: true
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-    command: start-dev
+    command: start-dev --import-realm
     ports:
-      - "8081:8080"
+      - "18080:8080"
     volumes:
-      - keycloak_data:/opt/jboss/keycloak/standalone/data
+      - keycloak_data:/opt/keycloak/data
+      - ./src/realms:/opt/keycloak/data/import
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "16686:16686"
 
 volumes:
   sql_data:

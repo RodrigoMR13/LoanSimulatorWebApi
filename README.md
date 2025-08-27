@@ -5,14 +5,17 @@ API REST desenvolvida com ASP.NET Core para [descrever o propósito da API, ex: 
 ## 🚀 Tecnologias Utilizadas
 
 - [.NET 9](https://dotnet.microsoft.com/)
-- [ASP.NET Core](https://learn.microsoft.com/aspnet/core/)
 - [Entity Framework Core (SQL Server)](https://learn.microsoft.com/ef/core/)
 - [Swagger / Swashbuckle](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)
-- [AutoMapper](https://automapper.org/)*
+- [EventHub](https://learn.microsoft.com/azure/event-hubs/)
+- [Docker](https://www.docker.com/)
+- [OpenTelemetry](https://opentelemetry.io/)
+- [Keycloak (SSO)](https://www.keycloak.org/)
+- [AutoMapper](https://automapper.org/)
 - [Serilog](https://serilog.net/)
 - [FluentValidation](https://docs.fluentvalidation.net/en/latest/)
 
-## Arquitetura do Projeto
+## 🏗️ Arquitetura do Projeto
 
 A arquitetura escolhida para o projeto foi o Clean Architecture, conforme determinação da Arquitetura de Referência da CAIXA.
 
@@ -25,7 +28,6 @@ Application/
 Domain/
 Infrastructure/
 LoanSimulatorWebAPI/
-UnitTests/
 ```
 
 ## ⚙️ Configuração e Execução
@@ -33,52 +35,60 @@ UnitTests/
 ### Pré-requisitos
 
 - .NET SDK 9.x instalado
-- Banco de dados configurado (ex: SQL Server, PostgreSQL)
+- Docker instalado (para subir os serviços do docker-compose)
+- WSL instalado (dispensado caso utilize Linux)
 
-### Subindo o Banco de Dados de simulações
+### 1. Configurar variáveis de ambiente
+
+No arquivo appsettings.json, preencha com os valores das variáveis de ambiente
+
+### 2. Subir os Serviços
+
+Execute os comandos abaixo no CMD/PowerShell
 
 ```bash
 # Navegue até a raiz do projeto
+# Criação do certificado
+dotnet dev-certs https -ep "./src/LoanSimulatorWebAPI/certs/localhost.pfx" -p "123"
+dotnet dev-certs https --trust
+
+# Suba os serviços do docker-compose (API, SQL Server, Keycloak e Jaeger)
 docker compose up -d
-
-# Obs.: para derrubar o banco de dados, execute:
-docker compose down
 ```
 
-### Executando localmente
+Agora execute os comandos abaixo no WSL
 
 ```bash
 # Navegue até a raiz do projeto
-# Restaurar pacotes
-dotnet restore
-
-# Executar a aplicação
-dotnet run --project ./LoanSimulatorWebAPI
+# Execute o init_db.sh para criar as tabelas no banco de dados e popular com os dados dos produtos
+./init_db.sh
 ```
 
-A API estará disponível em: `https://localhost:8081` ou `http://localhost:8080`
+### 3. Acessando os serviços
 
-### Executando via docker
+A API estará disponível em:
+`https://localhost:8443/swagger` ou `http://localhost:8080/swagger` (use https de preferência)
 
-```bash
-# Navegue até a pasta onde está o Dockerfile do projeto
-# Build da imagem
-docker build -t loansimulatorwebapi:latest .
+O Keycloak estará disponível em:
+`http://localhost:18080` (user: admin / password: admin)
 
-# Subindo container (HTTP)
-docker run --rm -p 8080:80 -e ASPNETCORE_ENVIRONMENT=Development --name loansimulatorwebapi loansimulatorwebapi:latest
-```
+O Jaeger (tracing) estará disponível em:
+`http://localhost:16686`
 
-A API estará disponível em: `http://localhost:8080`
+Por último, o SQL Server estará disponível em:
+`localhost,1433` (user: sa / password: Password123!)
+Use um SGBD de sua preferência para conectar.
 
-### Swagger
+### 4. Fazendo uma requisição para a API
 
-A documentação interativa estará disponível em:
+Use o Swagger para fazer as requisições ou uma ferramenta como Postman ou Insomnia.
 
-```
-http://localhost:8080/swagger
-https://localhost:8081/swagger
-```
+1. Para realizar a autenticação no swagger, utilize o ícone "Authorize" no canto direito.
+2. Preencha o campo "client_id" com "loan-simulator-api" e marque os 2 scopes (openid e profile)
+3. Clique em "Authorize"
+4. Você será redirecionado para a tela de login do SSO, se já tiver um usuário, preencha o usuário e a senha, se não, clique em "register"
+5. Após realizar o registro/login, você será redirecionado para a API novamente, basta clicar em close, pois você já está autenticado.
+6. Agora você pode fazer as requisições para os endpoints da API.
 
 ## 🧪 Testes
 
@@ -88,12 +98,53 @@ dotnet test
 
 ## 🛠️ Endpoints Principais
 
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET    | /api/v1/emprestimos/produtos       | Lista todos os produtos de empréstimo |
-| GET    | /api/v1/emprestimos/produtos/{id}  | Busca um produto de empréstimo por id |
-| POST   | /api/v1/emprestimos/simular        | Simula um empréstimo |
+| Método | Rota                              | Descrição                                      |
+| ------ | --------------------------------- | ---------------------------------------------- |
+| GET    | /emprestimos/v1/produtos          | Lista todos os produtos de empréstimo          |
+| GET    | /emprestimos/v1/produtos/{id}     | Busca um produto de empréstimo por id          |
+| POST   | /emprestimos/v1/simulacoes        | Simula um empréstimo                           |
+| GET    | /emprestimos/v1/simulacoes        | Retorna todas as simulações de empréstimos     |
+| GET    | /emprestimos/v1/simulacoes/volume | Retorna o volume de simulações de empréstimos  |
+| GET    | /emprestimos/v1/telemetry/summary | Retorna as métricas de telemetria da aplicação |
 
 ## 🔐 Autenticação
 
-[Descreva o método de autenticação, ex: JWT, OAuth2, etc.]
+A API usa Keycloak OAuth2 (Password Grant).
+
+### 1. Obter Token
+
+```
+POST {KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={CLIENT_ID}
+username={USUARIO}
+password={SENHA}
+grant_type=password
+```
+
+Exemplo:
+
+```
+curl -X POST "http://localhost:18080/realms/hackathon/protocol/openid-connect/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=loan-simulator-api" \
+  -d "username=testuser" \
+  -d "password=123" \
+  -d "grant_type=password"
+```
+
+### 2. Usar o Token
+
+Inclua no header das requisições:
+
+```
+Authorization: Bearer {access_token}
+```
+
+Exemplo:
+
+```
+curl -X GET "https://localhost:8443/emprestimos/v1/telemetry/summary" \
+  -H "Authorization: Bearer eyJhbGciOi..."
+```

@@ -10,12 +10,16 @@ obj/
 publish/
 
 # Logs
-LoanSimulatorWebApi/Logs/log-*
-# Segredos (ajuste conforme seu projeto)
+src/LoanSimulatorWebApi/Logs/log-*
+
 appsettings.Development.json
 appsettings.Production.json
 appsettings.Local.json
 EOF
 
-data/*
-!data/initial.sql
+# Dados do Sql Server
+src/data/*
+!src/data/initial.sql
+
+# Certificados Digitais
+src/LoanSimulatorWebApi/certs/*
