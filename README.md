@@ -42,6 +42,25 @@ LoanSimulatorWebAPI/
 
 No arquivo appsettings.json, preencha com os valores das variáveis de ambiente
 
+Os valores padrão para desenvolvimento local com docker são:
+
+```json
+{
+  "ConnectionStrings": {
+    "HackathonSqlDb": "Server=sqlserver,1433;Database=Hack;User Id=sa;Password=Password123!;TrustServerCertificate=True;",
+    "SimulationsSqlDb": "Server=sqlserver,1433;Database=Simulacoes;User Id=sa;Password=Password123!;TrustServerCertificate=True;"
+  },
+  "Keycloak": {
+    "AuthorizationUrl": "http://localhost:18080/realms/hackathon/protocol/openid-connect/auth",
+    "MetadataAddress": "http://keycloak:8080/realms/hackathon/.well-known/openid-configuration",
+    "ValidIssuer": "http://localhost:18080/realms/hackathon",
+    "Audience": "account"
+  }
+}
+```
+
+Obs.: O Event Hub precisa ser preenchido com os valores da ConnectionString e do EventHubName rodando na azure para esse projeto.
+
 ### 2. Subir os Serviços
 
 Execute os comandos abaixo no CMD/PowerShell
